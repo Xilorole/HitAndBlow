@@ -21,11 +21,13 @@ class Questioner;
 void sampleAlgorithm2(Questioner q, int *data);
 void sampleAlgorithm(Questioner q, int *data);
 void myAlgorithm(Questioner q, int *data);
+void swap(int d1,int d2,int *ptr);
 
 
 class Questioner{
     int thinkingNumber[digit]={0};
     mt19937 mt;
+
 public:
     vector<int> vec;
     int cleared;
@@ -37,10 +39,9 @@ public:
     void print(int* data);
     int* check(int checkNum, int *data);
     int* check(int *checkNumDigit, int *data);
-
+    void checkModule(int checkNum,int *checkNumDigit,int *data);
     Questioner();
     //指定の数字同士を交換する
-    void swap(int d1,int d2,int *ptr);
     void convertIntToArray(int number, int *arrayPtr);
 };
 
@@ -54,8 +55,8 @@ Questioner::Questioner() {
     cleared = 0;
     moves =0;
     int set = mt() % (int) pow(10, digit);
-    for (auto& e:vec) {
-        thinkingNumber[digit-e-1] = set % 10;
+    for (auto& i:vec) {
+        thinkingNumber[digit-i-1] = set % 10;
         set /= 10;
     }
     printf("<generated>\n");
@@ -79,7 +80,6 @@ void Questioner::generate(){
 
 //Questionerに対して想定している問題をprintするように命令する。
 void Questioner::print() {
-
     for (auto e:thinkingNumber) {
         printf("%d",e);
     }
@@ -87,7 +87,6 @@ void Questioner::print() {
 }
 
 void Questioner::result() {
-
     cout << "average moves : " << (double)moves/cleared << endl;
 }
 
@@ -97,7 +96,7 @@ void Questioner::print(int* data){
 }
 
 //配列形式で与えられたptrのd1番目とd2番目をスワップする。
-void Questioner::swap(int d1,int d2,int *ptr){
+void swap(int d1,int d2,int *ptr){
     int temp = ptr[d1];
     ptr[d1] = ptr[d2];
     ptr[d2] = temp;
@@ -105,6 +104,7 @@ void Questioner::swap(int d1,int d2,int *ptr){
 
 //arrayPtrにnumberを配列化したものを投げ込む
 void Questioner::convertIntToArray( int number,int *arrayPtr){
+
     for (auto e:vec) {
         arrayPtr[digit-e-1] = number % 10;
         number /= 10;
@@ -113,53 +113,28 @@ void Questioner::convertIntToArray( int number,int *arrayPtr){
 
 //配列checkNumDigitをチェックする。checkerに結果を投げ込む。
 int *Questioner::check(int *checkNumDigit, int *data) {
-    //data[0]:hit(s) data[1]:blow(s)
-    moves++;
-    int checkNum = checkNumDigit[0];
+    int checkNum = 0;
     for (auto j:vec) {
-        checkNum *= 10;
         checkNum += checkNumDigit[j];
+        checkNum *= 10;
     }
-    cout << checkNum << endl;
-    int cp = checkNum;
-
-    data[0]=0;data[1]=0;data[2]=checkNum;
-    int digitRecorder[10] = {0};
-    for (auto i:vec) {
-        digitRecorder[thinkingNumber[i]]++;
-        if (checkNumDigit[i] == thinkingNumber[i]) {
-            data[0]++;
-            checkNumDigit[i] = -1;
-            digitRecorder[thinkingNumber[i]]--;
-        }
-    }
-    for (auto i:vec) {
-        if (checkNumDigit[i] == -1)continue;
-        if (digitRecorder[checkNumDigit[i]] > 0) {
-            digitRecorder[checkNumDigit[i]]--;
-            data[1]++;
-        }
-    }
-    if(data[0]==digit){
-        printf("<matched:%d>\n",cp);
-        isCleared=true;
-        cleared++;
-    }
+    checkNum/=10;
+    Questioner::checkModule(checkNum, checkNumDigit, data);
     return data;
 }
 
 //調べたい数字checkNumを渡すと結果が帰ってくる。checkerに結果を投げ込む。
 int *Questioner::check(int checkNum, int *data) {
-    moves++;
-    //data[0]:hit(s) data[1]:blow(s)
-    int cp = checkNum;
-
-    data[0]=0;data[1]=0;data[2]=checkNum;
-    int digitRecorder[10] = {0};
-
     int checkNumDigit[digit];
     Questioner::convertIntToArray(checkNum,checkNumDigit);
+    Questioner::checkModule(checkNum, checkNumDigit, data);
+    return data;
+}
 
+void Questioner::checkModule(int checkNum, int *checkNumDigit, int *data) {
+    moves++;
+    int digitRecorder[10] = {0};
+    data[0]=0;data[1]=0;data[2]=checkNum;
     for (auto i:vec) {
         digitRecorder[thinkingNumber[i]]++;
         if (checkNumDigit[i] == thinkingNumber[i]) {
@@ -176,11 +151,11 @@ int *Questioner::check(int checkNum, int *data) {
         }
     }
     if(data[0]==digit){
-        printf("<matched:%d>\n",cp);
+        printf("<matched:%d>\n",checkNum);
+
         isCleared=true;
         cleared++;
     }
-    return data;
 }
 
 int main(){
@@ -191,10 +166,10 @@ int main(){
     clock_t start = clock();
 
 
-    sampleAlgorithm(q,data);
+    //sampleAlgorithm(q,data);
     //sampleAlgorithm2(q, data);
 
-    //myAlgorithm(q,data);
+    myAlgorithm(q,data);
 
 
     clock_t end = clock();
@@ -207,7 +182,14 @@ int main(){
 //自分のアルゴリズムはここにかこう！
 void myAlgorithm(Questioner q,int *data){
 
+    int checkNumDigit[4];
+    q.check(1123,data);
+    q.print(data);
+    q.convertIntToArray(1123,checkNumDigit);
 
+    swap(1,2,checkNumDigit);
+    q.check(checkNumDigit,data);
+    q.print(data);
 
     q.result();
 }
