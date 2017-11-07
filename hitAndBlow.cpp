@@ -5,7 +5,7 @@
 #include <iostream>
 #include <random>
 #include <cstring>
-#include <time.h>
+#include <ctime>
 
 //printfで定義される部分に関しては変数のviewableを切り替えることで描画する・しないを変更できるようにしてあります
 //具体的にはクラスQuestionerの内部のメソッドのログがそれに当たります。
@@ -24,13 +24,16 @@ void myAlgorithm(Questioner q, int *data);
 
 
 class Questioner{
-    int thinkingNumber[digit];
+    int thinkingNumber[digit]={0};
     mt19937 mt;
 public:
+    vector<int> vec;
     int cleared;
+    int moves;
     bool isCleared;
     void generate();
     void print();
+    void result();
     void print(int* data);
     int* check(int checkNum, int *data);
     int* check(int *checkNumDigit, int *data);
@@ -43,12 +46,16 @@ public:
 
 //コンストラクタ。内部に数を保持する。
 Questioner::Questioner() {
+    for (int i = 0; i < digit; ++i) {
+        vec.push_back(i);
+    }
     mt19937 mt(0);
     isCleared=false;
     cleared = 0;
+    moves =0;
     int set = mt() % (int) pow(10, digit);
-    for (int i = 0; i < digit; i++) {
-        thinkingNumber[digit-i-1] = set % 10;
+    for (auto& e:vec) {
+        thinkingNumber[digit-e-1] = set % 10;
         set /= 10;
     }
     printf("<generated>\n");
@@ -59,13 +66,12 @@ Questioner::Questioner() {
 void Questioner::generate(){
     if(isCleared) {
         int set = mt() % (int) pow(10, digit);
-        for (int i = 0; i < digit; i++) {
-            thinkingNumber[digit-i-1] = set % 10;
+        for (auto e:vec) {
+            thinkingNumber[digit-e-1] = set % 10;
             set /= 10;
         }
         printf("#cleared. generation succeeded.\n");
         isCleared = false;
-        cleared++;
     }else{
         printf("#uncleared. generation failed.\n");
     }
@@ -73,10 +79,16 @@ void Questioner::generate(){
 
 //Questionerに対して想定している問題をprintするように命令する。
 void Questioner::print() {
-    for (int i = 0; i < digit; i++) {
-        printf("%d",thinkingNumber[i]);
+
+    for (auto e:thinkingNumber) {
+        printf("%d",e);
     }
     printf("\n");
+}
+
+void Questioner::result() {
+
+    cout << cleared << " " << moves << "average moves : " << (double)moves/cleared << endl;
 }
 
 //checkの返り値として得られるdataを投げるとそれっぽく表示してくれる。
@@ -93,8 +105,8 @@ void Questioner::swap(int d1,int d2,int *ptr){
 
 //arrayPtrにnumberを配列化したものを投げ込む
 void Questioner::convertIntToArray( int number,int *arrayPtr){
-    for (int i = 0; i < digit; i++) {
-        arrayPtr[digit-i-1] = number % 10;
+    for (auto e:vec) {
+        arrayPtr[digit-e-1] = number % 10;
         number /= 10;
     }
 }
@@ -102,9 +114,9 @@ void Questioner::convertIntToArray( int number,int *arrayPtr){
 //配列checkNumDigitをチェックする。checkerに結果を投げ込む。
 int *Questioner::check(int *checkNumDigit, int *data) {
     //data[0]:hit(s) data[1]:blow(s)
-
+    moves++;
     int checkNum = checkNumDigit[0];
-    for (int j = 1; j < digit; j++) {
+    for (auto j:vec) {
         checkNum *= 10;
         checkNum += checkNumDigit[j];
     }
@@ -113,7 +125,7 @@ int *Questioner::check(int *checkNumDigit, int *data) {
 
     data[0]=0;data[1]=0;data[2]=checkNum;
     int digitRecorder[10] = {0};
-    for (int i = 0; i < digit; i++) {
+    for (auto i:vec) {
         digitRecorder[thinkingNumber[i]]++;
         if (checkNumDigit[i] == thinkingNumber[i]) {
             data[0]++;
@@ -121,7 +133,7 @@ int *Questioner::check(int *checkNumDigit, int *data) {
             digitRecorder[thinkingNumber[i]]--;
         }
     }
-    for (int i = 0; i < digit; i++) {
+    for (auto i:vec) {
         if (checkNumDigit[i] == -1)continue;
         if (digitRecorder[checkNumDigit[i]] > 0) {
             digitRecorder[checkNumDigit[i]]--;
@@ -131,12 +143,14 @@ int *Questioner::check(int *checkNumDigit, int *data) {
     if(data[0]==digit){
         printf("<matched:%d>\n",cp);
         isCleared=true;
+        cleared++;
     }
     return data;
 }
 
 //調べたい数字checkNumを渡すと結果が帰ってくる。checkerに結果を投げ込む。
 int *Questioner::check(int checkNum, int *data) {
+    moves++;
     //data[0]:hit(s) data[1]:blow(s)
     int cp = checkNum;
 
@@ -146,7 +160,7 @@ int *Questioner::check(int checkNum, int *data) {
     int checkNumDigit[digit];
     Questioner::convertIntToArray(checkNum,checkNumDigit);
 
-    for (int i = 0; i < digit; i++) {
+    for (auto i:vec) {
         digitRecorder[thinkingNumber[i]]++;
         if (checkNumDigit[i] == thinkingNumber[i]) {
             data[0]++;
@@ -154,7 +168,7 @@ int *Questioner::check(int checkNum, int *data) {
             digitRecorder[thinkingNumber[i]]--;
         }
     }
-    for (int i = 0; i < digit; i++) {
+    for (auto i:vec) {
         if (checkNumDigit[i] == -1)continue;
         if (digitRecorder[checkNumDigit[i]] > 0) {
             digitRecorder[checkNumDigit[i]]--;
@@ -164,6 +178,7 @@ int *Questioner::check(int checkNum, int *data) {
     if(data[0]==digit){
         printf("<matched:%d>\n",cp);
         isCleared=true;
+        cleared++;
     }
     return data;
 }
@@ -192,6 +207,9 @@ int main(){
 //自分のアルゴリズムはここにかこう！
 void myAlgorithm(Questioner q,int *data){
 
+
+
+    q.result();
 }
 
 
@@ -250,4 +268,5 @@ void sampleAlgorithm(Questioner q, int *data) {
     q.check(1568,data);
     q.print(data);
 
+    q.result();
 }
