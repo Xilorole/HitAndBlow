@@ -88,7 +88,7 @@ void Questioner::print() {
 
 void Questioner::result() {
 
-    cout << cleared << " " << moves << "average moves : " << (double)moves/cleared << endl;
+    cout << "average moves : " << (double)moves/cleared << endl;
 }
 
 //check‚Ì•Ô‚è’l‚Æ‚µ‚Ä“¾‚ç‚ê‚édata‚ð“Š‚°‚é‚Æ‚»‚ê‚Á‚Û‚­•\Ž¦‚µ‚Ä‚­‚ê‚éB
