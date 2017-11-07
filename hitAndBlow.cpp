@@ -104,7 +104,6 @@ void swap(int d1,int d2,int *ptr){
 
 //arrayPtr‚Énumber‚ğ”z—ñ‰»‚µ‚½‚à‚Ì‚ğ“Š‚°‚Ş
 void Questioner::convertIntToArray( int number,int *arrayPtr){
-
     for (auto e:vec) {
         arrayPtr[digit-e-1] = number % 10;
         number /= 10;
