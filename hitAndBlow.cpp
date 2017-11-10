@@ -27,7 +27,6 @@ void swap(int d1,int d2,int *ptr);
 class Questioner{
     int thinkingNumber[digit]={0};
     mt19937 mt;
-
 public:
     vector<int> vec;
     int cleared;
@@ -166,9 +165,9 @@ int main(){
 
 
     //sampleAlgorithm(q,data);
-    //sampleAlgorithm2(q, data);
+    sampleAlgorithm2(q, data);
 
-    myAlgorithm(q,data);
+    //myAlgorithm(q,data);
 
 
     clock_t end = clock();
