@@ -164,8 +164,8 @@ int main(){
     clock_t start = clock();
 
 
-    //sampleAlgorithm(q,data);
-    sampleAlgorithm2(q, data);
+    sampleAlgorithm(q,data);
+    //sampleAlgorithm2(q, data);
 
     //myAlgorithm(q,data);
 
@@ -173,6 +173,7 @@ int main(){
     clock_t end = clock();
     std::cout << "duration = " << (double)(end - start) / CLOCKS_PER_SEC << "sec.\n";
 
+    system("pause");
 }
 
 
@@ -180,16 +181,6 @@ int main(){
 //Ž©•ª‚ÌƒAƒ‹ƒSƒŠƒYƒ€‚Í‚±‚±‚É‚©‚±‚¤I
 void myAlgorithm(Questioner q,int *data){
 
-    int checkNumDigit[4];
-    q.check(1123,data);
-    q.print(data);
-    q.convertIntToArray(1123,checkNumDigit);
-
-    swap(1,2,checkNumDigit);
-    q.check(checkNumDigit,data);
-    q.print(data);
-
-    q.result();
 }
 
 
